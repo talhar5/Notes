@@ -12,6 +12,7 @@
 ### Constructors:
 - A constructor is called when an object/instance is created.
 - It cannot have any return type. Not even 'void'.
+- Constructor name must match the class name.
 - It can be used to set the initial values.
 -  
 ---
