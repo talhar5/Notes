@@ -1,5 +1,6 @@
 # Samar ky Notes
-## OOP Monday 06/11/2023 (week-2 day-1)
+## OOP Monday
+06/11/2023 (week-2 day-1)
 ### Why?
 - scaling
 ## OOP & UML Tuesday 07/11/2023 (week-2 day-2)
