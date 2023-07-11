@@ -2,7 +2,11 @@
 ## OOP Monday
 06/11/2023 (week-2 day-1)
 ### Why?
-- scaling
+- Provides clear structure for the program. For instance, in a bank application, all the methods related to saving accounts can be found in the saving account class.
+- Easier to maintain, modify and debug.
+### Class:
+- class is a template for an object. "Car" is a class. "Volvo" "Honda" etc are the objects.
+- When individual objects are created, they inherit all the variables and methods from the class.
 ## OOP & UML Tuesday 07/11/2023 (week-2 day-2)
 ### Polymorphism: 
 - Static Polymorphism: Overloading
