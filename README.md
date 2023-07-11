@@ -19,16 +19,32 @@
 ## OOP & UML 
 *Tuesday 07/11/2023 (week-2 day-2)*
 
-### Access Modifiers:
-- **public**: A public member can be accessed from other classes.
-- **private**: A private member can only be accessed in the same class and can be accessed by its objects/instances.
-- **protected**: A protected member can be accessed from the derived classes.
+### Encapsulation: 
+- to make sure that sensitive data is hidden from users.
+**Property** It's like a combination of a variable and a method.
+#### get & set
+```
+class Person
+{
+  private string name; // field
+
+  public string Name   // property
+  {
+    get { return name; }   // get method
+    set { name = value; }  // set method
+  }
+}
+```
+### Access Modifiers: (Encapsulation)
+- **public**: Accessible for all classes.
+- **private**: Accessible within the same class.
+- **protected**: Accessible within the same class and derived classes.
+By default, all members of a class are private, if you do not specify.
 ### Polymorphism: 
 - Static Polymorphism: Overloading: same function with different type or number of parameters
 - Dynamic Polymorphism: Overriding
 - To override a method in a derived class, it must be declared in the base class as an abstract or virtual method.
 - Overloading does not happen on changing the return type, because if the program does not consume the returned value, the compiler would be confused about which method to call.
-
 
 ### Abstract Class:
 - Cannot be used to create classes.
@@ -39,3 +55,5 @@
 - Interface can only contain signatures of the methods and properties.
 - The keyword 'override' is not used while overriding methods of interfaces.
 - All the methods are abstract and public in an abstract class.
+
+
