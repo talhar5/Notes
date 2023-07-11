@@ -14,10 +14,10 @@
 - It cannot have any return type. Not even 'void'.
 - Constructor name must match the class name.
 - It can be used to set the initial values.
--  
+- Constructors can be overloaded.  
 ---
-## OOP & UML Tuesday
-*07/11/2023 (week-2 day-2)*
+## OOP & UML 
+*Tuesday 07/11/2023 (week-2 day-2)*
 
 ### Access Modifiers:
 - **public**: A public member can be accessed from other classes.
