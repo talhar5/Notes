@@ -35,6 +35,7 @@ class Person
   }
 }
 ```
+for automatic: `public string name {get; set;}`
 ### Access Modifiers: (Encapsulation)
 - **public**: Accessible for all classes.
 - **private**: Accessible within the same class.
@@ -45,6 +46,10 @@ By default, all members of a class are private, if you do not specify.
 - Dynamic Polymorphism: Overriding
 - To override a method in a derived class, it must be declared in the base class as an abstract or virtual method.
 - Overloading does not happen on changing the return type, because if the program does not consume the returned value, the compiler would be confused about which method to call.
+
+### Abstraction:
+- to hide certain details from the user.
+- can be achieved by abstract classes and interfaces.
 
 ### Abstract Class:
 - Cannot be used to create classes.
