@@ -42,8 +42,8 @@ for automatic: `public string name {get; set;}`
 - **protected**: Accessible within the same class and derived classes.
 By default, all members of a class are private, if you do not specify.
 ### Polymorphism: 
-- Static Polymorphism: Overloading: same function with different type or number of parameters
-- Dynamic Polymorphism: Overriding
+- Static Polymorphism: Overloading: compile-time polymorphism: same function with different type or number of parameters
+- Dynamic Polymorphism: Overriding: run-time polymorphism
 - To override a method in a derived class, it must be declared in the base class as an abstract or virtual method.
 - Overloading does not happen on changing the return type, because if the program does not consume the returned value, the compiler would be confused about which method to call.
 
