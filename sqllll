@@ -1,0 +1,435 @@
+
+USE [MoviesApplication];
+GO
+
+
+-- USER PROCEDURES
+-- to insert a new user
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertUser]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[InsertUser];
+GO
+CREATE PROCEDURE [dbo].[InsertUser]
+	@fullName VARCHAR(100),
+	@username VARCHAR(100),
+	@email VARCHAR(100),
+	@password VARCHAR(100),
+	@returnUserId INT OUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	INSERT INTO [dbo].[User] ([fullName], [username], [email], [password])
+	VALUES(@fullName, @username, @email, @password);
+	SET @returnUserId = SCOPE_IDENTITY();
+	INSERT INTO [dbo].[Cart] ([userId])
+	VALUES (@returnUserId);
+END
+GO
+
+-- to get a user by userId
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetUser]') AND type = N'P')
+	DROP PROCEDURE [dbo].[GetUser];
+GO
+CREATE PROCEDURE [dbo].[GetUser]
+	@userId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[User]
+	WHERE [userId] = @userId;
+END
+GO
+
+-- to get user by email
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetUserByEmail]') AND type = N'P')
+	DROP PROCEDURE [dbo].[GetUserByEmail];
+GO
+CREATE PROCEDURE [dbo].[GetUserByEmail]
+	@email VARCHAR(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[User]
+	WHERE [email] = @email;
+END
+GO
+
+-- to get a user by username
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetUserByUsername]') AND type = N'P')
+	DROP PROCEDURE [dbo].[GetUserByUsername];
+GO
+CREATE PROCEDURE [dbo].[GetUserByUsername]
+	@username VARCHAR(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[User]
+	WHERE [username] = @username;
+END
+GO
+
+-- to check if the email is registered or not
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IsEmailRegistered]') AND type = N'P')
+	DROP PROCEDURE [dbo].[isEmailRegistered];
+GO
+CREATE PROCEDURE [dbo].[isEmailRegistered]
+	@email VARCHAR(100),
+	@isRegistered BIT OUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	IF EXISTS (SELECT * FROM [dbo].[User] WHERE [email] = @email)
+		SET @isRegistered = 1;
+	ELSE
+		SET @isRegistered = 0;
+END
+GO
+
+-- to check if the username is available or not
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IsUsernameAvailable]') AND type = N'P')
+	DROP PROCEDURE [dbo].[IsUsernameAvailable];
+GO
+CREATE PROCEDURE [dbo].[IsUsernameAvailable]
+	@username VARCHAR(100),
+	@isAvailable BIT OUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	IF EXISTS (SELECT * FROM [dbo].[User] WHERE [username] = @username)
+		SET @isAvailable = 0;
+	ELSE
+		SET @isAvailable = 1;
+END
+GO
+
+-- GENRE PROCEDURE
+-- to add a new genre
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertGenre]') AND type = N'P')
+	DROP PROCEDURE [dbo].[InsertGenre];
+GO
+CREATE PROCEDURE [dbo].[InsertGenre]
+	@name VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	INSERT INTO [dbo].[Genre]([name])
+	VALUES (@name);
+END
+GO
+
+-- to get all genres
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetAllGenres]') AND type = N'P')
+	DROP PROCEDURE [dbo].[GetAllGenres];
+GO
+CREATE PROCEDURE [dbo].[GetAllGenres]
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[Genre];
+END
+GO
+
+-- to filter genres
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FilterGenre]') AND type = N'P')
+	DROP PROCEDURE [dbo].[FilterGenre];
+GO
+CREATE PROCEDURE [dbo].[FilterGenre]
+	@name VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[Genre]
+	WHERE [name] LIKE @name + '%';
+END
+GO
+
+-- MOVIES PROCEDURES
+-- to insert a new movie
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertMovie]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[InsertMovie];
+GO
+CREATE PROCEDURE [dbo].[InsertMovie]
+	@title VARCHAR(100),
+	@description VARCHAR(500),
+	@duration INT,
+	@releasedOn DATE,
+	@price FLOAT,
+	@addedBy INT,
+	@poster VARBINARY(MAX),
+	@posterExtension VARCHAR(20),
+	@returnMovieId INT OUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	INSERT INTO [dbo].[Movie] ([title], [description], [duration], [releasedOn], [price], [addedBy], [poster], [posterExtension])
+	VALUES(@title, @description, @duration, @releasedOn, @price, @addedBy, @poster, @posterExtension);
+	SET @returnMovieId = SCOPE_IDENTITY();
+END
+GO
+
+-- to remove a movie
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[RemoveMovie]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[RemoveMovie];
+GO
+CREATE PROCEDURE [dbo].[RemoveMovie]
+	@movieId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	UPDATE [dbo].[Movie]
+	SET [isDeleted] = 1
+	WHERE [movieId] = @movieId;
+END
+GO
+
+-- to get a movie
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetMovie]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[GetMovie];
+GO
+CREATE PROCEDURE [dbo].[GetMovie]
+	@movieId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[Movie]
+	WHERE movieId = @movieId;
+END
+GO
+
+-- to get list of movies ordered by released date
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetMoviesOrderedByReleasedDate]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[GetMoviesOrderedByReleasedDate];
+GO
+CREATE PROCEDURE [dbo].[GetMoviesOrderedByReleasedDate]
+	@pageNumber INT = 1,
+	@pageSize INT = 10
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[Movie]
+	ORDER BY [releasedOn] DESC
+	OFFSET (@pageNumber - 1) * @pageSize ROWS 
+	FETCH NEXT @pageSize ROWS ONLY;
+END
+GO
+
+-- to search a movie
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SearchMovie]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[SearchMovie];
+GO
+CREATE PROCEDURE [dbo].[SearchMovie]
+	@searchQuery VARCHAR(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[Movie]
+	WHERE [title] = '%' + @searchQuery + '%';
+END
+GO
+
+-- to update a movie
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateMovie]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[UpdateMovie];
+GO
+CREATE PROCEDURE [dbo].[UpdateMovie]
+	@description VARCHAR(500) = NULL,
+	@price FLOAT = NULL,
+	@poster VARBINARY(MAX) = NULL,
+	@releasedOn DATE = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	UPDATE [dbo].[Movie]
+	SET
+		[description] = ISNULL(@description, [description]),
+		[price] = ISNULL(@price, [price]),
+		[poster] = ISNULL(@poster, [poster]),
+		[releasedOn] = ISNULL(@releasedOn, [releasedOn])
+END
+GO
+
+-- SEARCHWORD PROCEDURES
+-- to insert a search word
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertSearchWord]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[InsertSearchWord];
+GO
+CREATE PROCEDURE [dbo].[InsertSearchWord]
+	@searchWord VARCHAR(100),
+	@userId INT
+	
+AS
+BEGIN
+	SET NOCOUNT ON;
+	INSERT INTO [dbo].[SearchWord] ([word], [userId])
+	VALUES (@searchWord, @userId);
+END
+GO
+
+-- to get search history
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSearchHistory]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[GetSearchHistory];
+GO
+CREATE PROCEDURE [dbo].[GetSearchHistory]
+	@userId INT
+	
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT *
+	FROM [dbo].[SearchWord]
+	WHERE [userId] = @userId;
+END
+GO
+
+-- CART PROCEDURES
+-- to insert a new cart
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertCart]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[InsertCart];
+GO
+CREATE PROCEDURE [dbo].[InsertCart]
+	@userId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	INSERT INTO [dbo].[Cart] ([userId])
+	VALUES (@userId);
+END
+GO
+
+-- to insert a movie into a cart
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[AddToCart]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[AddToCart];
+GO
+CREATE PROCEDURE [dbo].[AddToCart]
+	@userId INT,
+	@movieId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	INSERT INTO [dbo].[CartMovie] ([cartId], [movieId])
+	VALUES (
+		(SELECT [cartId] FROM [dbo].[Cart] WHERE [userId] = @userId),
+		@movieId
+	);
+END
+GO
+
+-- to get movies from cart
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetMoviesFromCart]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[GetMoviesFromCart];
+GO
+CREATE PROCEDURE [dbo].[GetMoviesFromCart]
+	@userId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT DISTINCT M.*
+	FROM [dbo].[Movie] M
+	INNER JOIN [dbo].[CartMovie] CM ON M.movieId = CM.movieId
+	WHERE CM.cartId = (SELECT [cartId] FROM [dbo].[Cart] WHERE [userId] = @userId);
+END
+GO
+
+-- to remove a movie from cart
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[RemoveFromCart]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[RemoveFromCart];
+GO
+CREATE PROCEDURE [dbo].[RemoveFromCart]
+	@userId INT,
+	@movieId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DELETE FROM [dbo].[CartMovie]
+	WHERE [cartId] = (SELECT [cartId] FROM [dbo].[Cart] WHERE [userId] = @userId) AND [movieId] = @movieId;
+END
+GO
+
+-- to get cart count for a specific user
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCartCount]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[GetCartCount];
+GO
+CREATE PROCEDURE [dbo].[GetCartCount]
+	@userId INT,
+	@cartCount INT OUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT @cartCount = COUNT(*)
+	FROM [dbo].[CartMovie]
+	WHERE [cartId] = (SELECT [cartId] FROM [dbo].[Cart] WHERE [userId] = @userId);
+END
+GO
+
+-- to clear a cart
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ClearCart]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[ClearCart];
+GO
+CREATE PROCEDURE [dbo].[ClearCart]
+	@cartId INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DELETE FROM [dbo].[CartMovie]
+	WHERE [cartId] = @cartId;
+END
+GO
+
+
+-- ORDER PROCEDURES
+-- to insert an order
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertOrder]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[InsertOrder];
+GO
+CREATE PROCEDURE [dbo].[InsertOrder]
+	@userId INT,
+	@orderedOn DATE
+AS
+BEGIN
+	SET NOCOUNT ON;
+	-- to be implemented
+END
+GO
+
+ -- to insert an error log
+ IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertErrorLog]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[InsertErrorLog];
+GO
+CREATE PROCEDURE [dbo].[InsertErrorLog]
+	@type VARCHAR(50),
+	@message VARCHAR(100),
+	@targetSite VARCHAR(100),
+	@stackTrace VARCHAR(255)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	INSERT INTO [dbo].[ErrorLog] ([type], [message], [targetSite], [stackTrace])
+	VALUES (@type, @message, @targetSite, @stackTrace);
+END
+GO
+
+ -- to make a user admin
+ IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MakeAdmin]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[MakeAdmin];
+GO
+CREATE PROCEDURE [dbo].[MakeAdmin]
+	@email VARCHAR(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	UPDATE [dbo].[User]
+	SET [isAdmin] = 1
+	WHERE [email] = @email;
+END
+GO
+
+INSERT INTO [dbo].[Genre] ([name]) VALUES('drame');
+INSERT INTO [dbo].[Genre] ([name]) VALUES('thriller');
+
