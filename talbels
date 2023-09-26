@@ -1,0 +1,153 @@
+USE [master];
+GO
+
+-- checking if the db exists or not
+IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'MoviesApplication')
+	BEGIN
+		CREATE DATABASE [MoviesApplication];
+		PRINT 'New database has been created';
+	END 
+ELSE 
+	PRINT 'Database already exists';
+GO
+
+USE [MoviesApplication];
+GO
+
+
+
+
+-- CREATING TABLES
+
+-- User Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[User]') AND type = N'U')
+	CREATE TABLE [dbo].[User] (
+		[userId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[fullName] VARCHAR(100) NOT NULL,
+		[username] VARCHAR(100) NOT NULL UNIQUE,
+		[email] VARCHAR(100) NOT NULL UNIQUE,
+		[password] VARCHAR(100) NOT NULL,
+		[joinedOn] DATETIME DEFAULT GETDATE(),
+		[isAdmin] BIT DEFAULT 0
+	);
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SearchWord]') AND type = N'U')
+	CREATE TABLE [SearchWord] (
+		[searchWordId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[word] VARCHAR(30) NOT NULL,
+		[userId] INT FOREIGN KEY REFERENCES [User](userId) NOT NULL
+	);
+GO
+
+	-- Movie Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Movie]') AND type = N'U')
+	CREATE TABLE [dbo].[Movie] (
+		[movieId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[title] VARCHAR(100) NOT NULL,
+		[description] VARCHAR(500) NOT NULL,
+		[duration] INT NOT NULL,
+		[releasedOn] DATE NOT NULL,
+		[price] FLOAT NOT NULL,
+		[addedBy] INT FOREIGN KEY REFERENCES [User]([userId]) NOT NULL,
+		[addedOn] DATETIME NOT NULL DEFAULT GETDATE(),
+		[poster] VARBINARY(MAX) NOT NULL,
+		[posterExtension] VARCHAR(20) NOT NULL,
+		[isDeleted] BIT NOT NULL DEFAULT 0
+	);
+GO
+
+-- Genre Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Genre]') AND type = N'U')
+	CREATE TABLE [dbo].[Genre] (
+		[genreId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[name] VARCHAR(50) NOT NULL,
+	);
+GO
+
+-- GenreMovie Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GenreMovie]') AND type = N'U')
+	CREATE TABLE [dbo].[GenreMovie] (
+		[genreMovieId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[movieId] INT FOREIGN KEY REFERENCES [Movie]([movieId]) NOT NULL,
+		[genreId] INT FOREIGN KEY REFERENCES [Genre]([genreId]) NOT NULL,
+	);
+GO
+
+-- SearchWord Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SearchWord]') AND type = N'U')
+	CREATE TABLE [dbo].[SearchWord] (
+		[searchWordId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[word] VARCHAR(100) NOT NULL,
+		[userId] INT FOREIGN KEY REFERENCES [User]([userId]) NOT NULL
+	);
+GO
+
+-- Order Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Order]') AND type = N'U')
+	CREATE TABLE [dbo].[Order] (
+		[orderId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[orderedOn] DATETIME NOT NULL,
+		[userId] INT FOREIGN KEY REFERENCES [User]([userId]) NOT NULL 
+	);
+GO
+
+-- OrderMovie Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[OrderMovie]') AND type = N'U')
+	CREATE TABLE [dbo].[OrderMovie] (
+		[orderMovieId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[movieId] INT FOREIGN KEY REFERENCES [Movie]([movieId]) NOT NULL,
+		[orderId] INT FOREIGN KEY REFERENCES [Order]([orderId]) NOT NULL,
+	);
+GO
+
+-- MoviePurchase Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MoviePurchase]') AND type = N'U')
+	CREATE TABLE [dbo].[MoviePurchase] (
+		[purchaseId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[movieId] INT FOREIGN KEY REFERENCES [Movie]([movieId]) NOT NULL,
+		[orderId] INT FOREIGN KEY REFERENCES [Order]([orderId]) NOT NULL,
+		[price] FLOAT NOT NULL
+	);
+GO
+
+-- MoviePurchase Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MoviePurchase]') AND type = N'U')
+	CREATE TABLE [dbo].[MoviePurchase] (
+		[cartId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[movieId] INT FOREIGN KEY REFERENCES [Movie]([movieId]) NOT NULL,
+		[orderId] INT FOREIGN KEY REFERENCES [Order]([orderId]) NOT NULL,
+		[price] FLOAT NOT NULL
+	);
+GO
+
+-- Cart Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Cart]') AND type = N'U')
+	CREATE TABLE [dbo].[Cart] (
+		[cartId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[userId] INT FOREIGN KEY REFERENCES [User]([userId]) NOT NULL,
+	);
+GO
+
+-- CartMovie Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[CartMovie]') AND type = N'U')
+	CREATE TABLE [dbo].[CartMovie] (
+		[cartMovieId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[cartId] INT FOREIGN KEY REFERENCES [Cart]([cartId]) NOT NULL,
+		[movieId] INT FOREIGN KEY REFERENCES [Movie]([movieId]) NOT NULL,
+	);
+GO
+
+
+-- Error Logs Table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ErrorLog]') AND type = N'U')
+	CREATE TABLE [dbo].[ErrorLog] (
+		[errorLogId] INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+		[type] VARCHAR(50) NOT NULL,
+		[message] VARCHAR(100) NOT NULL,
+		[stackTrace] VARCHAR(255) NOT NULL,
+		[targetSite] VARCHAR(100),
+		[occuredOn] DATETIME NOT NULL DEFAULT GETDATE(),
+	);
+GO
